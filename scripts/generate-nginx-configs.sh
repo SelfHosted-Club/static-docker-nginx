@@ -17,7 +17,7 @@ for domain_dir in /app/sites/*/; do
         echo "Dry run failed for ${domain}. Generating self-signed certificate."
 
         # Create a self-signed certificate for the domain
-        openssl req -x509 -nodes -newkey rsa:2048 -days 365 -keyout /etc/nginx/ssl/${domain}.key -out /etc/nginx/ssl/${domain}.crt -subj "/CN=${domain}"
+        openssl req -x509 -nodes -newkey rsa:2048 -days 365 -keyout /etc/letsencrypt/live/${domain}/fullchain.pem -out /etc/letsencrypt/live/${domain}/privkey.pem -subj "/CN=${domain}"
     fi
 
     # Generate Nginx configuration file for the domain
