@@ -1,5 +1,7 @@
 FROM nginx:stable-alpine
 
+LABEL maintainer="Ilia Tivin <ilia@selfhosted.club>"
+
 ARG EMAIL
 
 RUN apk add --no-cache certbot certbot-nginx bind-tools
