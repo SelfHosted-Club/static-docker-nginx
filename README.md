@@ -27,40 +27,7 @@ The container will take 2 minutes to start as it waits for certificates.
 
 #### Successful run:
 ```txt
-selfhosted@PC My sites % docker run -d -p 80:80 -p 443:443 -e EMAIL=your@email.com --name nginx-certbot nginx-certbot
-29deb02f36404e8da793a4ddf4b44115e8ed0807b7463c48f64d30c5165d7f47
-selfhosted@PC My sites % docker logs -f nginx-certbot
-Running generate-nginx-configs.sh script...
-Saving debug log to /var/log/letsencrypt/letsencrypt.log
-Account registered.
-Simulating a certificate request for selfhosted.club and www.selfhosted.club
-Waiting 60 seconds for DNS changes to propagate
-The dry run was successful.
-Dry run succeeded for selfhosted.club. Proceeding with certificate issuance.
-Saving debug log to /var/log/letsencrypt/letsencrypt.log
-Account registered.
-Requesting a certificate for selfhosted.club and www.selfhosted.club
-Waiting 60 seconds for DNS changes to propagate
-Hook 'deploy-hook' reported error code 1
-Hook 'deploy-hook' ran with error output:
- 2024/03/12 06:18:38 [notice] 13#13: signal process started
- 2024/03/12 06:18:38 [error] 13#13: open() "/var/run/nginx.pid" failed (2: No such file or directory)
- nginx: [error] open() "/var/run/nginx.pid" failed (2: No such file or directory)
-
-Successfully received certificate.
-Certificate is saved at: /etc/letsencrypt/live/selfhosted.club/fullchain.pem
-Key is saved at:         /etc/letsencrypt/live/selfhosted.club/privkey.pem
-This certificate expires on 2024-06-10.
-These files will be updated when the certificate renews.
-NEXT STEPS:
-- The certificate will need to be renewed before it expires. Certbot can automatically renew the certificate in the background, but you may need to take steps to enable that functionality. See https://certbot.org/renewal-setup for instructions.
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-If you like Certbot, please consider supporting our work by:
- * Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
- * Donating to EFF:                    https://eff.org/donate-le
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Starting Nginx...
+Update later
 ```
 
 The error above ` nginx: [error] open() "/var/run/nginx.pid" failed (2: No such file or directory)` is safe to ignore, as nginx hasn't been started yet.
