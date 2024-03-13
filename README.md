@@ -1,4 +1,4 @@
-# Static site hosting on nginx with certbot and RFC-2136
+# Static site hosting on nginx with acme.sh and RFC-2136 support
 
 I prefer static sites as it's easier to host and secure over CMS and dynamic ones.
 This is a container that will be used in a pipeline that will be created everytime I run an update and push changes on my site - this is for production use and not for testing as this one uses certbot to generate certificates at run time - if you restart the container lots of times you will get throttled by Let's Encrypt.
