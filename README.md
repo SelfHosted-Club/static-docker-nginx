@@ -22,7 +22,7 @@ Replace the variables with your email.
 For provider configuration, visit [acme.sh documentation](https://github.com/acmesh-official/acme.sh)
 
 > You must have the env file to run this.
-{: .prompt-info }
+
 
 env file format is:
 ```text
