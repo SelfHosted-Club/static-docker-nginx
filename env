@@ -1,0 +1,16 @@
+Domain[0].name=
+Domain[0].SSL_PROVIDER=zerossl
+Domain[0].plugin=dns_cf
+Domain[0].PROVIDER=ddns
+Domain[0].CF_API=
+Domain[0].CF_EMAIL=
+Domain[0].EMAIL=
+
+# Below is configuration for custom DNS supporting RFC-2136 such as Technitium
+Domain[1].name=
+Domain[1].SSL_PROVIDER=letsencrypt
+Domain[1].plugin=dns_lexicon
+Domain[1].PROVIDER=ddns
+Domain[1].LEXICON_DDNS_DDNS_SERVER=1.2.3.4
+Domain[1].LEXICON_DDNS_TOKEN=hmac-sha256:TSIG_NAME:TSIG_KEY
+Domain[1].EMAIL=
