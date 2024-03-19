@@ -11,9 +11,6 @@ declare -a domains
 declare -a plugins
 declare -a exported_variables
 
-# Register account with ZeroSSL
-/root/.acme.sh/acme.sh --register-account -m ${EMAIL}
-
 echo "Reading domain configurations from .env file..."
 
 # Read domain configurations from the .env file
@@ -47,19 +44,44 @@ for index in "${!domains[@]}"; do
     if [[ -n $domain && -n $plugin ]]; then
         echo "Using ${plugin} plugin for domain: ${domain}"
 
-        # Create the directory for storing the certificate files
-        mkdir -p "/root/.acme.sh/${domain}"
-        echo "Created directory: /root/.acme.sh/${domain}"
+        # Register account with the specified SSL provider for the current domain
+        /root/.acme.sh/acme.sh --register-account -m ${EMAIL} --server ${SSL_PROVIDER}
 
-        # Issue SSL certificate using acme.sh with the specified DNS plugin
-        echo "Issuing SSL certificate for ${domain} using ${plugin}..."
-        /root/.acme.sh/acme.sh --issue --server letsencrypt --dns ${plugin} -d ${domain} -d www.${domain}
+        # Check if the certificate directory already exists
+        if [ -d "/root/.acme.sh/certificates/${domain}" ]; then
+            echo "Certificate directory already exists for ${domain}."
+
+            # Check the expiration date of the existing certificate
+            expiration_info=$(/root/.acme.sh/acme.sh --info -d "${domain}" | grep "Le_NextRenewTimeStr" | awk -F '=' '{print $2}')
+            expiration_date=$(date -d "$expiration_info" "+%Y-%m-%d")
+            current_date=$(date +%Y-%m-%d)
+            expiration_seconds=$(date -d "${expiration_date}" +%s)
+            current_seconds=$(date -d "${current_date}" +%s)
+            days_remaining=$(( (expiration_seconds - current_seconds) / (60*60*24) ))
+
+            echo "SSL certificate for ${domain} expires on ${expiration_date}."
+
+            if [ "${days_remaining}" -lt 30 ]; then
+                echo "SSL certificate for ${domain} is expiring soon. Renewing..."
+                /root/.acme.sh/acme.sh --renew -d ${domain} --ecc --server ${SSL_PROVIDER} --dns ${plugin}
+            else
+                echo "SSL certificate for ${domain} is still valid. Skipping renewal."
+            fi
+        else
+            # Create the directory for storing the certificate files
+            mkdir -p "/root/.acme.sh/certificates/${domain}"
+            echo "Created directory: /root/.acme.sh/certificates/${domain}"
+
+            # Issue SSL certificate using acme.sh with the specified DNS plugin and SSL provider
+            echo "Issuing SSL certificate for ${domain} using ${plugin} and ${SSL_PROVIDER}..."
+            /root/.acme.sh/acme.sh --issue --server ${SSL_PROVIDER} --dns ${plugin} -d ${domain} -d www.${domain} --dnssleep 35 -m ${EMAIL} --eab-hmac-key ${HMAC_KEY} --eab-kid ${ACCOUNT_KEY}
+        fi
 
         # Install the issued certificate
         echo "Installing SSL certificate for ${domain}..."
         /root/.acme.sh/acme.sh --install-cert --ecc -d ${domain} \
-            --key-file /root/.acme.sh/${domain}/${domain}.key \
-            --fullchain-file /root/.acme.sh/${domain}/fullchain.cer
+            --key-file /root/.acme.sh/certificates/${domain}/${domain}.key \
+            --fullchain-file /root/.acme.sh/certificates/${domain}/fullchain.cer
 
         # Generate Nginx configuration file for the domain
         cat > "/etc/nginx/conf.d/${domain}.conf" <<EOL
@@ -76,8 +98,8 @@ server {
     listen 443 ssl;
     server_name ${domain} www.${domain};
 
-    ssl_certificate /root/.acme.sh/${domain}/fullchain.cer;
-    ssl_certificate_key /root/.acme.sh/${domain}/${domain}.key;
+    ssl_certificate /root/.acme.sh/certificates/${domain}/fullchain.cer;
+    ssl_certificate_key /root/.acme.sh/certificates/${domain}/${domain}.key;
 
     location / {
         root /app/sites/${domain};
