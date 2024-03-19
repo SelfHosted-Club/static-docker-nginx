@@ -31,6 +31,7 @@ DOMAIN[x].Variable=Value
 
 The variable is passed directly to the runtime, so if acme.sh needs a variable such as CF_API_KEY then you should configure DOMAIN[x].CF_API_KEY.
 
+```shell
 docker run -d -p 80:80 -p 443:443 --name static-site-webserver static-nginx
 ```
 The container will run through the entire configuration and certificate request before it starts, so it really depends on the amount of domains you have.
